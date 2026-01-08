@@ -1,0 +1,107 @@
+cmake_minimum_required(VERSION 3.15)
+project(CoolProp_MATLAB)
+
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Find MATLAB
+find_package(Matlab REQUIRED COMPONENTS MX_LIBRARY)
+
+# Set root directory
+set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+
+# Set CoolProp library paths
+set(COOLPROP_DLL "${ROOT_DIR}/build/Release/CoolProp.dll")
+set(COOLPROP_LIB "${ROOT_DIR}/build/Release/CoolProp.lib")
+
+# Include directories
+include_directories(
+    ${Matlab_INCLUDE_DIRS}
+    ${ROOT_DIR}/include
+    ${ROOT_DIR}/externals/fmtlib/include
+)
+
+# Create PropsSI MEX file
+matlab_add_mex(
+    NAME PropsSI
+    SRC PropsSI.cpp
+    LINK_TO ${COOLPROP_LIB}
+)
+
+# Add compiler flags
+if(MSVC)
+    target_compile_options(PropsSI PRIVATE /utf-8)
+endif()
+
+# Set output directory
+set_target_properties(PropsSI PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+# Create HAPropsSI MEX file
+matlab_add_mex(
+    NAME HAPropsSI
+    SRC HAPropsSI.cpp
+    LINK_TO ${COOLPROP_LIB}
+)
+
+# Add compiler flags
+if(MSVC)
+    target_compile_options(HAPropsSI PRIVATE /utf-8)
+endif()
+
+# Set output directory
+set_target_properties(HAPropsSI PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+# Create AbstractState MEX file
+matlab_add_mex(
+    NAME AbstractState
+    SRC AbstractState.cpp
+    LINK_TO ${COOLPROP_LIB}
+)
+
+# Add compiler flags
+if(MSVC)
+    target_compile_options(AbstractState PRIVATE /utf-8)
+endif()
+
+# Set output directory
+set_target_properties(AbstractState PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+# On Windows, copy CoolProp.dll to output directory
+if(WIN32)
+    add_custom_command(TARGET PropsSI POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${ROOT_DIR}/build/Release/CoolProp.dll"
+        $<TARGET_FILE_DIR:PropsSI>
+        COMMENT "Copying CoolProp.dll to output directory"
+    )
+    add_custom_command(TARGET HAPropsSI POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${ROOT_DIR}/build/Release/CoolProp.dll"
+        $<TARGET_FILE_DIR:HAPropsSI>
+        COMMENT "Copying CoolProp.dll to output directory"
+    )
+    add_custom_command(TARGET AbstractState POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${ROOT_DIR}/build/Release/CoolProp.dll"
+        $<TARGET_FILE_DIR:AbstractState>
+        COMMENT "Copying CoolProp.dll to output directory"
+    )
+endif()
+
+# Copy MATLAB helper class to output directory
+add_custom_command(TARGET AbstractState POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/CoolPropState.m"
+    $<TARGET_FILE_DIR:AbstractState>
+    COMMENT "Copying CoolPropState.m to output directory"
+)
