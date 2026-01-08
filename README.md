@@ -47,6 +47,7 @@ Add the Release folder to your MATLAB path:
 addpath('$COOLPROP_ROOT$\wrappers\MATLAB\Release')
 ```
 Replace `$COOLPROP_ROOT$` with your path
+
 ---
 
 ## PropsSI - Pure and Pseudo-Pure Fluid Properties
