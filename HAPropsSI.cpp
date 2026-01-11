@@ -6,6 +6,23 @@ extern "C" {
 
 #include <string>
 
+// Helper function to convert MATLAB string or char array to C string
+char* getString(const mxArray *arr) {
+    if (mxIsChar(arr)) {
+        // Traditional char array
+        return mxArrayToString(arr);
+    } else if (mxIsClass(arr, "string")) {
+        // MATLAB string (R2016b+)
+        mxArray *lhs[1];
+        mxArray *rhs[1];
+        rhs[0] = const_cast<mxArray*>(arr);
+        if (mexCallMATLAB(1, lhs, 1, rhs, "char") == 0) {
+            return mxArrayToString(lhs[0]);
+        }
+    }
+    return NULL;
+}
+
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     // Check for proper number of arguments
@@ -14,8 +31,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                           "Seven inputs required: Output, Name1, Prop1, Name2, Prop2, Name3, Prop3");
     }
     
-    // Check that inputs 1, 2, 4, 6 are strings
-    if (!mxIsChar(prhs[0]) || !mxIsChar(prhs[1]) || !mxIsChar(prhs[3]) || !mxIsChar(prhs[5])) {
+    // Check that inputs 1, 2, 4, 6 are strings or char arrays
+    if ((!mxIsChar(prhs[0]) && !mxIsClass(prhs[0], "string")) ||
+        (!mxIsChar(prhs[1]) && !mxIsClass(prhs[1], "string")) ||
+        (!mxIsChar(prhs[3]) && !mxIsClass(prhs[3], "string")) ||
+        (!mxIsChar(prhs[5]) && !mxIsClass(prhs[5], "string"))) {
         mexErrMsgIdAndTxt("CoolProp:HAPropsSI:notString",
                           "Inputs 1, 2, 4, and 6 must be strings.");
     }
@@ -29,10 +49,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
     
     // Get string inputs
-    char *Output = mxArrayToString(prhs[0]);
-    char *Name1 = mxArrayToString(prhs[1]);
-    char *Name2 = mxArrayToString(prhs[3]);
-    char *Name3 = mxArrayToString(prhs[5]);
+    char *Output = getString(prhs[0]);
+    char *Name1 = getString(prhs[1]);
+    char *Name2 = getString(prhs[3]);
+    char *Name3 = getString(prhs[5]);
+    
+    if (Output == NULL || Name1 == NULL || Name2 == NULL || Name3 == NULL) {
+        if (Output) mxFree(Output);
+        if (Name1) mxFree(Name1);
+        if (Name2) mxFree(Name2);
+        if (Name3) mxFree(Name3);
+        mexErrMsgIdAndTxt("CoolProp:HAPropsSI:stringConversion",
+                          "Failed to convert one or more string inputs.");
+    }
     
     // Get double inputs
     double Prop1 = mxGetScalar(prhs[2]);

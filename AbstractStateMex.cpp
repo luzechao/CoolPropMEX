@@ -11,6 +11,27 @@ extern "C" {
 static std::map<long, bool> activeHandles;
 static long nextId = 1;
 
+// Helper function to convert MATLAB string or char array to C string
+char* getString(const mxArray *arr) {
+    if (mxIsChar(arr)) {
+        // Traditional char array
+        return mxArrayToString(arr);
+    } else if (mxIsClass(arr, "string")) {
+        // MATLAB string (R2016b+)
+        mxArray *charArray = mxGetProperty(arr, 0, "StringData");
+        if (charArray == NULL) {
+            // Try alternative method for string conversion
+            mxArray *lhs[1];
+            mxArray *rhs[1];
+            rhs[0] = const_cast<mxArray*>(arr);
+            if (mexCallMATLAB(1, lhs, 1, rhs, "char") == 0) {
+                return mxArrayToString(lhs[0]);
+            }
+        }
+    }
+    return NULL;
+}
+
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     // Check minimum number of arguments
@@ -20,12 +41,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
     
     // Get command string
-    if (!mxIsChar(prhs[0])) {
+    if (!mxIsChar(prhs[0]) && !mxIsClass(prhs[0], "string")) {
         mexErrMsgIdAndTxt("CoolProp:AbstractState:notString",
                           "First input must be a command string.");
     }
     
-    char *command = mxArrayToString(prhs[0]);
+    char *command = getString(prhs[0]);
+    if (command == NULL) {
+        mexErrMsgIdAndTxt("CoolProp:AbstractState:stringConversion",
+                          "Failed to convert first input to string.");
+    }
     std::string cmd(command);
     mxFree(command);
     
@@ -42,8 +67,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                                   "Usage: handle = AbstractState('create', backend, fluid)");
             }
             
-            char *backend = mxArrayToString(prhs[1]);
-            char *fluid = mxArrayToString(prhs[2]);
+            char *backend = getString(prhs[1]);
+            char *fluid = getString(prhs[2]);
+            
+            if (backend == NULL || fluid == NULL) {
+                if (backend) mxFree(backend);
+                if (fluid) mxFree(fluid);
+                mexErrMsgIdAndTxt("CoolProp:AbstractState:stringConversion",
+                                  "Failed to convert backend or fluid to string.");
+            }
             
             long handle = AbstractState_factory(backend, fluid, &errcode, message_buffer, buffer_length);
             
@@ -195,7 +227,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             }
             
             long handle = (long)mxGetScalar(prhs[1]);
-            char *phase = mxArrayToString(prhs[2]);
+            char *phase = getString(prhs[2]);
+            
+            if (phase == NULL) {
+                mexErrMsgIdAndTxt("CoolProp:AbstractState:stringConversion",
+                                  "Failed to convert phase to string.");
+            }
             
             if (activeHandles.find(handle) == activeHandles.end()) {
                 mxFree(phase);
