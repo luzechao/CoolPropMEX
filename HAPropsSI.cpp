@@ -5,6 +5,7 @@ extern "C" {
 }
 
 #include <string>
+#include <cmath>
 
 // Helper function to convert MATLAB string or char array to C string
 char* getString(const mxArray *arr) {
@@ -71,14 +72,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     // Call CoolProp function
     double result = HAPropsSI(Output, Name1, Prop1, Name2, Prop2, Name3, Prop3);
     
-    // Check for error (HAPropsSI returns a huge value on error)
-    if (result > 1e30) {
+    // Check for error (HAPropsSI returns a huge value on error: > 1e30 or < -1e30 or NaN or Inf)
+    if (!std::isfinite(result) || result > 1e30 || result < -1e30) {
+        // Get the error message from CoolProp
+        char errstr[10000];
+        get_global_param_string("errstring", errstr, 10000);
+        
         mxFree(Output);
         mxFree(Name1);
         mxFree(Name2);
         mxFree(Name3);
-        mexErrMsgIdAndTxt("CoolProp:HAPropsSI:exception",
-                          "HAPropsSI returned an error. Check input parameters.");
+        
+        mexErrMsgIdAndTxt("CoolProp:HAPropsSI:error", errstr);
     }
     
     // Create output

@@ -5,6 +5,7 @@ extern "C" {
 }
 
 #include <string>
+#include <cmath>
 
 // Helper function to convert MATLAB string or char array to C string
 char* getString(const mxArray *arr) {
@@ -65,15 +66,20 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     double Prop2 = mxGetScalar(prhs[4]);
     
     // Call CoolProp function
-    double result;
-    try {
-        result = PropsSI(Output, Name1, Prop1, Name2, Prop2, FluidName);
-    } catch (const std::exception& e) {
+    double result = PropsSI(Output, Name1, Prop1, Name2, Prop2, FluidName);
+    
+    // Check for error (PropsSI returns a huge value on error: > 1e30 or < -1e30 or NaN or Inf)
+    if (!std::isfinite(result) || result > 1e30 || result < -1e30) {
+        // Get the error message from CoolProp
+        char errstr[10000];
+        get_global_param_string("errstring", errstr, 10000);
+        
         mxFree(Output);
         mxFree(Name1);
         mxFree(Name2);
         mxFree(FluidName);
-        mexErrMsgIdAndTxt("CoolProp:PropsSI:exception", e.what());
+        
+        mexErrMsgIdAndTxt("CoolProp:PropsSI:error", errstr);
     }
     
     // Create output
