@@ -58,20 +58,20 @@ set_target_properties(HAPropsSI PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-# Create AbstractState MEX file
+# Create AbstractStateMex MEX file
 matlab_add_mex(
-    NAME AbstractState
-    SRC AbstractState.cpp
+    NAME AbstractStateMex
+    SRC AbstractStateMex.cpp
     LINK_TO ${COOLPROP_LIB}
 )
 
 # Add compiler flags
 if(MSVC)
-    target_compile_options(AbstractState PRIVATE /utf-8)
+    target_compile_options(AbstractStateMex PRIVATE /utf-8)
 endif()
 
 # Set output directory
-set_target_properties(AbstractState PROPERTIES
+set_target_properties(AbstractStateMex PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
@@ -90,18 +90,18 @@ if(WIN32)
         $<TARGET_FILE_DIR:HAPropsSI>
         COMMENT "Copying CoolProp.dll to output directory"
     )
-    add_custom_command(TARGET AbstractState POST_BUILD
+    add_custom_command(TARGET AbstractStateMex POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${ROOT_DIR}/build/Release/CoolProp.dll"
-        $<TARGET_FILE_DIR:AbstractState>
+        $<TARGET_FILE_DIR:AbstractStateMex>
         COMMENT "Copying CoolProp.dll to output directory"
     )
 endif()
 
 # Copy MATLAB helper class to output directory
-add_custom_command(TARGET AbstractState POST_BUILD
+add_custom_command(TARGET AbstractStateMex POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${CMAKE_CURRENT_SOURCE_DIR}/CoolPropState.m"
-    $<TARGET_FILE_DIR:AbstractState>
-    COMMENT "Copying CoolPropState.m to output directory"
+    "${CMAKE_CURRENT_SOURCE_DIR}/AbstractState.m"
+    $<TARGET_FILE_DIR:AbstractStateMex>
+    COMMENT "Copying AbstractState.m to output directory"
 )

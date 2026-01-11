@@ -1,10 +1,10 @@
-classdef CoolPropState < handle
-    %COOLPROPSTATE Wrapper class for CoolProp AbstractState MEX interface
+classdef AbstractState < handle
+    %ABSTRACTSTATE Wrapper class for CoolProp AbstractState MEX interface
     %   Provides an object-oriented interface to CoolProp's low-level API
     %
     %   Example:
-    %       state = CoolPropState('HEOS', 'Water');
-    %       state.update(CoolPropState.PT_INPUTS, 101325, 300);
+    %       state = AbstractState('HEOS', 'Water');
+    %       state.update(AbstractState.PT_INPUTS, 101325, 300);
     %       rho = state.rhomass();
     %       h = state.hmass();
     
@@ -154,24 +154,24 @@ classdef CoolPropState < handle
     end
     
     methods
-        function obj = CoolPropState(backend, fluid)
-            %COOLPROPSTATE Construct an AbstractState object
-            %   state = CoolPropState(backend, fluid)
+        function obj = AbstractState(backend, fluid)
+            %ABSTRACTSTATE Construct an AbstractState object
+            %   state = AbstractState(backend, fluid)
             %
             %   Inputs:
             %       backend - Backend name (e.g., 'HEOS', 'REFPROP')
             %       fluid   - Fluid name (e.g., 'Water', 'Air', 'R134a')
             %
             %   Example:
-            %       state = CoolPropState('HEOS', 'Water');
+            %       state = AbstractState('HEOS', 'Water');
             
-            obj.handle = AbstractState('create', backend, fluid);
+            obj.handle = AbstractStateMex('create', backend, fluid);
         end
         
         function delete(obj)
             %DELETE Destructor - frees the C++ object
             if ~isempty(obj.handle)
-                AbstractState('free', obj.handle);
+                AbstractStateMex('free', obj.handle);
                 obj.handle = [];
             end
         end
@@ -181,14 +181,14 @@ classdef CoolPropState < handle
             %   state.update(input_pair, value1, value2)
             %
             %   Inputs:
-            %       input_pair - Input pair constant (e.g., CoolPropState.PT_INPUTS)
+            %       input_pair - Input pair constant (e.g., AbstractState.PT_INPUTS)
             %       value1     - First value
             %       value2     - Second value
             %
             %   Example:
-            %       state.update(CoolPropState.PT_INPUTS, 101325, 300);
+            %       state.update(AbstractState.PT_INPUTS, 101325, 300);
             
-            AbstractState('update', obj.handle, input_pair, value1, value2);
+            AbstractStateMex('update', obj.handle, input_pair, value1, value2);
         end
         
         function val = keyed_output(obj, param)
@@ -196,12 +196,12 @@ classdef CoolPropState < handle
             %   val = state.keyed_output(param)
             %
             %   Input:
-            %       param - Parameter constant (e.g., CoolPropState.iT)
+            %       param - Parameter constant (e.g., AbstractState.iT)
             %
             %   Example:
-            %       T = state.keyed_output(CoolPropState.iT);
+            %       T = state.keyed_output(AbstractState.iT);
             
-            val = AbstractState('keyed_output', obj.handle, param);
+            val = AbstractStateMex('keyed_output', obj.handle, param);
         end
         
         function set_fractions(obj, fractions)
@@ -214,7 +214,7 @@ classdef CoolPropState < handle
             %   Example:
             %       state.set_fractions([0.5, 0.5]);
             
-            AbstractState('set_fractions', obj.handle, fractions);
+            AbstractStateMex('set_fractions', obj.handle, fractions);
         end
         
         function fracs = get_mole_fractions(obj)
@@ -224,7 +224,7 @@ classdef CoolPropState < handle
             %   Example:
             %       fracs = state.get_mole_fractions();
             
-            fracs = AbstractState('get_mole_fractions', obj.handle);
+            fracs = AbstractStateMex('get_mole_fractions', obj.handle);
         end
         
         function specify_phase(obj, phase)
@@ -237,28 +237,28 @@ classdef CoolPropState < handle
             %   Example:
             %       state.specify_phase('liquid');
             
-            AbstractState('specify_phase', obj.handle, phase);
+            AbstractStateMex('specify_phase', obj.handle, phase);
         end
         
         function unspecify_phase(obj)
             %UNSPECIFY_PHASE Remove phase specification
             %   state.unspecify_phase()
             
-            AbstractState('unspecify_phase', obj.handle);
+            AbstractStateMex('unspecify_phase', obj.handle);
         end
         
         function name = backend_name(obj)
             %BACKEND_NAME Get the backend name
             %   name = state.backend_name()
             
-            name = AbstractState('backend_name', obj.handle);
+            name = AbstractStateMex('backend_name', obj.handle);
         end
         
         function names = fluid_names(obj)
             %FLUID_NAMES Get the fluid name(s)
             %   names = state.fluid_names()
             
-            names = AbstractState('fluid_names', obj.handle);
+            names = AbstractStateMex('fluid_names', obj.handle);
         end
         
         % Convenience methods for common properties

@@ -36,8 +36,8 @@ This folder contains the MATLAB MEX wrappers for CoolProp, providing both high-l
 4. The compiled MEX files will be in the `Release` folder along with `CoolProp.dll`:
    - `PropsSI.mexw64` - Pure fluid properties
    - `HAPropsSI.mexw64` - Humid air properties
-   - `AbstractState.mexw64` - Low-level interface
-   - `CoolPropState.m` - Helper class for AbstractState
+   - `AbstractStateMex.mexw64` - Low-level interface MEX function
+   - `AbstractState.m` - MATLAB class for AbstractState
 
 ## Using the MEX Functions in MATLAB
 
@@ -182,14 +182,14 @@ The AbstractState interface provides advanced functionality including:
 
 ### Using the Helper Class (Recommended)
 
-The `CoolPropState` class provides an easy-to-use object-oriented interface:
+The `AbstractState` class provides an easy-to-use object-oriented interface:
 
 ```matlab
 % Create a state object
-state = CoolPropState('HEOS', 'Water');
+state = AbstractState('HEOS', 'Water');
 
 % Update state with pressure and temperature
-state.update(CoolPropState.PT_INPUTS, 101325, 300);
+state.update(AbstractState.PT_INPUTS, 101325, 300);
 
 % Get properties
 rho = state.rhomass()      % Mass density [kg/m³]
@@ -205,7 +205,7 @@ clear state
 
 ### Input Pair Constants
 
-Common input pairs available in `CoolPropState`:
+Common input pairs available in `AbstractState`:
 - `PT_INPUTS` - Pressure [Pa], Temperature [K]
 - `DmassT_INPUTS` - Mass density [kg/m³], Temperature [K]
 - `HmassP_INPUTS` - Mass enthalpy [J/kg], Pressure [Pa]
@@ -217,13 +217,13 @@ Common input pairs available in `CoolPropState`:
 
 ```matlab
 % Create a mixture state
-state = CoolPropState('HEOS', 'Methane&Ethane');
+state = AbstractState('HEOS', 'Methane&Ethane');
 
 % Set mole fractions (50% methane, 50% ethane)
 state.set_fractions([0.5, 0.5]);
 
 % Update and get properties
-state.update(CoolPropState.PT_INPUTS, 101325, 300);
+state.update(AbstractState.PT_INPUTS, 101325, 300);
 rho = state.rhomass()
 h = state.hmass()
 
@@ -237,16 +237,16 @@ For advanced users, you can call the MEX function directly:
 
 ```matlab
 % Create state
-handle = AbstractState('create', 'HEOS', 'Water');
+handle = AbstractStateMex('create', 'HEOS', 'Water');
 
 % Update state
-AbstractState('update', handle, 8, 101325, 300);  % 8 = PT_INPUTS
+AbstractStateMex('update', handle, 8, 101325, 300);  % 8 = PT_INPUTS
 
 % Get output (iDmass = 11 for mass density)
-rho = AbstractState('keyed_output', handle, 11);
+rho = AbstractStateMex('keyed_output', handle, 11);
 
 % Free the state when done
-AbstractState('free', handle);
+AbstractStateMex('free', handle);
 ```
 
 Available commands:
@@ -285,9 +285,13 @@ end
 
 - `PropsSI.cpp` - PropsSI MEX source code
 - `HAPropsSI.cpp` - HAPropsSI MEX source code
-- `AbstractState.cpp` - AbstractState MEX source code
-- `CoolPropState.m` - Object-oriented wrapper for AbstractState
+- `AbstractStateMex.cpp` - AbstractState MEX source code
+- `AbstractState.m` - Object-oriented wrapper for AbstractState
 - `CMakeLists.txt` - CMake build configuration
+- `Release/PropsSI.mexw64` - Compiled PropsSI MEX function (Windows 64-bit)
+- `Release/HAPropsSI.mexw64` - Compiled HAPropsSI MEX function (Windows 64-bit)
+- `Release/AbstractStateMex.mexw64` - Compiled AbstractState MEX function (Windows 64-bit)
+- `Release/CoolProp.dll` - CoolProp shared library
 
 ## Troubleshooting
 
