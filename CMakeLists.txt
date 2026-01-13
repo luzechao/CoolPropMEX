@@ -11,9 +11,17 @@ find_package(Matlab REQUIRED COMPONENTS MX_LIBRARY)
 # Set root directory
 set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 
-# Set CoolProp library paths
-set(COOLPROP_DLL "${ROOT_DIR}/build/Release/CoolProp.dll")
-set(COOLPROP_LIB "${ROOT_DIR}/build/Release/CoolProp.lib")
+# Set CoolProp library paths based on platform
+if(WIN32)
+    set(COOLPROP_SHARED_LIB "${ROOT_DIR}/build/Release/CoolProp.dll")
+    set(COOLPROP_LIB "${ROOT_DIR}/build/Release/CoolProp.lib")
+elseif(APPLE)
+    set(COOLPROP_SHARED_LIB "${ROOT_DIR}/build/libCoolProp.dylib")
+    set(COOLPROP_LIB "${ROOT_DIR}/build/libCoolProp.dylib")
+else() # Linux
+    set(COOLPROP_SHARED_LIB "${ROOT_DIR}/build/libCoolProp.so")
+    set(COOLPROP_LIB "${ROOT_DIR}/build/libCoolProp.so")
+endif()
 
 # Include directories
 include_directories(
@@ -32,6 +40,8 @@ matlab_add_mex(
 # Add compiler flags
 if(MSVC)
     target_compile_options(PropsSI PRIVATE /utf-8)
+elseif(UNIX)
+    target_compile_options(PropsSI PRIVATE -fPIC)
 endif()
 
 # Set output directory
@@ -50,6 +60,8 @@ matlab_add_mex(
 # Add compiler flags
 if(MSVC)
     target_compile_options(HAPropsSI PRIVATE /utf-8)
+elseif(UNIX)
+    target_compile_options(HAPropsSI PRIVATE -fPIC)
 endif()
 
 # Set output directory
@@ -68,6 +80,8 @@ matlab_add_mex(
 # Add compiler flags
 if(MSVC)
     target_compile_options(AbstractStateMex PRIVATE /utf-8)
+elseif(UNIX)
+    target_compile_options(AbstractStateMex PRIVATE -fPIC)
 endif()
 
 # Set output directory
@@ -76,25 +90,76 @@ set_target_properties(AbstractStateMex PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-# On Windows, copy CoolProp.dll to output directory
+# Copy CoolProp shared library to output directory
 if(WIN32)
     add_custom_command(TARGET PropsSI POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${ROOT_DIR}/build/Release/CoolProp.dll"
+        "${COOLPROP_SHARED_LIB}"
         $<TARGET_FILE_DIR:PropsSI>
-        COMMENT "Copying CoolProp.dll to output directory"
+        COMMENT "Copying CoolProp shared library to output directory"
     )
     add_custom_command(TARGET HAPropsSI POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${ROOT_DIR}/build/Release/CoolProp.dll"
+        "${COOLPROP_SHARED_LIB}"
         $<TARGET_FILE_DIR:HAPropsSI>
-        COMMENT "Copying CoolProp.dll to output directory"
+        COMMENT "Copying CoolProp shared library to output directory"
     )
     add_custom_command(TARGET AbstractStateMex POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${ROOT_DIR}/build/Release/CoolProp.dll"
+        "${COOLPROP_SHARED_LIB}"
         $<TARGET_FILE_DIR:AbstractStateMex>
-        COMMENT "Copying CoolProp.dll to output directory"
+        COMMENT "Copying CoolProp shared library to output directory"
+    )
+elseif(APPLE)
+    add_custom_command(TARGET PropsSI POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COOLPROP_SHARED_LIB}"
+        $<TARGET_FILE_DIR:PropsSI>
+        COMMENT "Copying CoolProp shared library to output directory"
+    )
+    add_custom_command(TARGET HAPropsSI POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COOLPROP_SHARED_LIB}"
+        $<TARGET_FILE_DIR:HAPropsSI>
+        COMMENT "Copying CoolProp shared library to output directory"
+    )
+    add_custom_command(TARGET AbstractStateMex POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COOLPROP_SHARED_LIB}"
+        $<TARGET_FILE_DIR:AbstractStateMex>
+        COMMENT "Copying CoolProp shared library to output directory"
+    )
+else() # Linux
+    # Set RPATH to find shared library at runtime
+    set_target_properties(PropsSI PROPERTIES
+        BUILD_WITH_INSTALL_RPATH TRUE
+        INSTALL_RPATH "$ORIGIN"
+    )
+    set_target_properties(HAPropsSI PROPERTIES
+        BUILD_WITH_INSTALL_RPATH TRUE
+        INSTALL_RPATH "$ORIGIN"
+    )
+    set_target_properties(AbstractStateMex PROPERTIES
+        BUILD_WITH_INSTALL_RPATH TRUE
+        INSTALL_RPATH "$ORIGIN"
+    )
+    add_custom_command(TARGET PropsSI POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COOLPROP_SHARED_LIB}"
+        $<TARGET_FILE_DIR:PropsSI>
+        COMMENT "Copying CoolProp shared library to output directory"
+    )
+    add_custom_command(TARGET HAPropsSI POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COOLPROP_SHARED_LIB}"
+        $<TARGET_FILE_DIR:HAPropsSI>
+        COMMENT "Copying CoolProp shared library to output directory"
+    )
+    add_custom_command(TARGET AbstractStateMex POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COOLPROP_SHARED_LIB}"
+        $<TARGET_FILE_DIR:AbstractStateMex>
+        COMMENT "Copying CoolProp shared library to output directory"
     )
 endif()
 
