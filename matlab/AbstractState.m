@@ -83,85 +83,86 @@ classdef AbstractState < handle
         iP_max = 16;
         iP_min = 17;
         idipole_moment = 18;
+        iHmolar_formation = 19; % Standard molar enthalpy of formation [J/mol]
         
         % Bulk properties
-        iT = 19;           % Temperature [K]
-        iP = 20;           % Pressure [Pa]
-        iQ = 21;           % Molar vapor quality [0-1] (alias for iQmolar)
-        iQmass = 22;       % Mass-basis vapor quality [0-1] (new in CoolProp 8)
-        iTau = 23;         % Reciprocal reduced temperature
-        iDelta = 24;       % Reduced density
+        iT = 20;           % Temperature [K]
+        iP = 21;           % Pressure [Pa]
+        iQ = 22;           % Molar vapor quality [0-1] (alias for iQmolar)
+        iQmass = 23;       % Mass-basis vapor quality [0-1] (new in CoolProp 8)
+        iTau = 24;         % Reciprocal reduced temperature
+        iDelta = 25;       % Reduced density
         
         % Molar specific properties
-        iDmolar = 25;      % Molar density [mol/m^3]
-        iHmolar = 26;      % Molar enthalpy [J/mol]
-        iSmolar = 27;      % Molar entropy [J/mol/K]
-        iCpmolar = 28;     % Molar cp [J/mol/K]
-        iCp0molar = 29;    % Ideal gas molar cp [J/mol/K]
-        iCvmolar = 30;     % Molar cv [J/mol/K]
-        iUmolar = 31;      % Molar internal energy [J/mol]
-        iGmolar = 32;      % Molar Gibbs energy [J/mol]
-        iHelmholtzmolar = 33;  % Molar Helmholtz energy [J/mol]
-        iHmolar_residual = 34;
-        iSmolar_residual = 35;
-        iGmolar_residual = 36;
-        iHmolar_idealgas = 37;
-        iSmolar_idealgas = 38;
-        iUmolar_idealgas = 39;
+        iDmolar = 26;      % Molar density [mol/m^3]
+        iHmolar = 27;      % Molar enthalpy [J/mol]
+        iSmolar = 28;      % Molar entropy [J/mol/K]
+        iCpmolar = 29;     % Molar cp [J/mol/K]
+        iCp0molar = 30;    % Ideal gas molar cp [J/mol/K]
+        iCvmolar = 31;     % Molar cv [J/mol/K]
+        iUmolar = 32;      % Molar internal energy [J/mol]
+        iGmolar = 33;      % Molar Gibbs energy [J/mol]
+        iHelmholtzmolar = 34;  % Molar Helmholtz energy [J/mol]
+        iHmolar_residual = 35;
+        iSmolar_residual = 36;
+        iGmolar_residual = 37;
+        iHmolar_idealgas = 38;
+        iSmolar_idealgas = 39;
+        iUmolar_idealgas = 40;
         
         % Mass specific properties
-        iDmass = 40;       % Mass density [kg/m^3]
-        iHmass = 41;       % Mass enthalpy [J/kg]
-        iSmass = 42;       % Mass entropy [J/kg/K]
-        iCpmass = 43;      % Mass cp [J/kg/K]
-        iCp0mass = 44;     % Ideal gas mass cp [J/kg/K]
-        iCvmass = 45;      % Mass cv [J/kg/K]
-        iUmass = 46;       % Mass internal energy [J/kg]
-        iGmass = 47;       % Mass Gibbs energy [J/kg]
-        iHelmholtzmass = 48;  % Mass Helmholtz energy [J/kg]
-        iHmass_idealgas = 49;
-        iSmass_idealgas = 50;
-        iUmass_idealgas = 51;
+        iDmass = 41;       % Mass density [kg/m^3]
+        iHmass = 42;       % Mass enthalpy [J/kg]
+        iSmass = 43;       % Mass entropy [J/kg/K]
+        iCpmass = 44;      % Mass cp [J/kg/K]
+        iCp0mass = 45;     % Ideal gas mass cp [J/kg/K]
+        iCvmass = 46;      % Mass cv [J/kg/K]
+        iUmass = 47;       % Mass internal energy [J/kg]
+        iGmass = 48;       % Mass Gibbs energy [J/kg]
+        iHelmholtzmass = 49;  % Mass Helmholtz energy [J/kg]
+        iHmass_idealgas = 50;
+        iSmass_idealgas = 51;
+        iUmass_idealgas = 52;
         
         % Transport properties
-        iviscosity = 52;   % Viscosity [Pa-s]
-        iconductivity = 53;  % Thermal conductivity [W/m/K]
-        isurface_tension = 54;  % Surface tension [N/m]
-        iPrandtl = 55;     % Prandtl number
+        iviscosity = 53;   % Viscosity [Pa-s]
+        iconductivity = 54;  % Thermal conductivity [W/m/K]
+        isurface_tension = 55;  % Surface tension [N/m]
+        iPrandtl = 56;     % Prandtl number
         
         % Derivative-based properties
-        ispeed_sound = 56;  % Speed of sound [m/s]
-        iisothermal_compressibility = 57;
-        iisobaric_expansion_coefficient = 58;
-        iisentropic_expansion_coefficient = 59;
+        ispeed_sound = 57;  % Speed of sound [m/s]
+        iisothermal_compressibility = 58;
+        iisobaric_expansion_coefficient = 59;
+        iisentropic_expansion_coefficient = 60;
         
         % Other properties
-        ifundamental_derivative_of_gas_dynamics = 60;
-        ialphar = 61;
-        idalphar_dtau_constdelta = 62;
-        idalphar_ddelta_consttau = 63;
-        ialpha0 = 64;
-        idalpha0_dtau_constdelta = 65;
-        idalpha0_ddelta_consttau = 66;
-        id2alpha0_ddelta2_consttau = 67;
-        id3alpha0_ddelta3_consttau = 68;
-        iBvirial = 69;     % Second virial coefficient
-        iCvirial = 70;     % Third virial coefficient
-        idBvirial_dT = 71;
-        idCvirial_dT = 72;
-        iZ = 73;           % Compressibility factor
-        iPIP = 74;
-        ifraction_min = 75;
-        ifraction_max = 76;
-        iT_freeze = 77;
-        iGWP20 = 78;
-        iGWP100 = 79;
-        iGWP500 = 80;
-        iFH = 81;
-        iHH = 82;
-        iPH = 83;
-        iODP = 84;
-        iPhase = 85;
+        ifundamental_derivative_of_gas_dynamics = 61;
+        ialphar = 62;
+        idalphar_dtau_constdelta = 63;
+        idalphar_ddelta_consttau = 64;
+        ialpha0 = 65;
+        idalpha0_dtau_constdelta = 66;
+        idalpha0_ddelta_consttau = 67;
+        id2alpha0_ddelta2_consttau = 68;
+        id3alpha0_ddelta3_consttau = 69;
+        iBvirial = 70;     % Second virial coefficient
+        iCvirial = 71;     % Third virial coefficient
+        idBvirial_dT = 72;
+        idCvirial_dT = 73;
+        iZ = 74;           % Compressibility factor
+        iPIP = 75;
+        ifraction_min = 76;
+        ifraction_max = 77;
+        iT_freeze = 78;
+        iGWP20 = 79;
+        iGWP100 = 80;
+        iGWP500 = 81;
+        iFH = 82;
+        iHH = 83;
+        iPH = 84;
+        iODP = 85;
+        iPhase = 86;
     end
     
     methods
