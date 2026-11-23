@@ -129,7 +129,7 @@ macro(add_mex_target MEX_NAME)
             COMMENT "Copying libCoolProp.dylib to Release/"
         )
     else()
-        # Copy the versioned .so (e.g. libCoolProp.so.8.0.0) and create the
+        # Copy the versioned .so (e.g. libCoolProp.so.8.1.0) and create the
         # soname symlink (libCoolProp.so.8) beside it so that the dynamic
         # linker can resolve it when MATLAB loads the MEX file from that dir.
         add_custom_command(TARGET ${MEX_NAME} POST_BUILD

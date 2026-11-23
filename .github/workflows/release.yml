@@ -130,7 +130,7 @@ jobs:
 
       # GitHub Actions artifact upload does not preserve symlinks.
       # Recreate the soname and linker-name symlinks for the Linux .so so that
-      # the dynamic linker can find libCoolProp.so.7 (the soname baked into the
+      # the dynamic linker can find libCoolProp.so.8 (the soname baked into the
       # MEX files) when users extract the zip.
       - name: Recreate libCoolProp symlinks in Linux artifact
         run: |
@@ -142,7 +142,7 @@ jobs:
             exit 1
           fi
           echo "Versioned file: $VERSIONED"
-          # Extract major version for soname (e.g. libCoolProp.so.8.0.0 -> libCoolProp.so.8)
+          # Extract major version for soname (e.g. libCoolProp.so.8.1.0 -> libCoolProp.so.8)
           MAJOR=$(echo "$VERSIONED" | grep -oP 'libCoolProp\.so\.\K[0-9]+')
           SONAME="libCoolProp.so.${MAJOR}"
           echo "Creating symlinks: $SONAME -> $VERSIONED  and  libCoolProp.so -> $VERSIONED"

@@ -1,6 +1,6 @@
 # CoolProp MATLAB MEX Wrapper
 
-MATLAB MEX wrappers for [CoolProp v8.0.0](https://github.com/CoolProp/CoolProp), providing high-level and low-level thermophysical property interfaces. CoolProp is included as a git submodule and compiled together with the MEX files in a single build step.
+MATLAB MEX wrappers for [CoolProp v8.1.0](https://github.com/CoolProp/CoolProp), providing high-level and low-level thermophysical property interfaces. CoolProp is included as a git submodule and compiled together with the MEX files in a single build step.
 
 ## Features
 
@@ -12,7 +12,7 @@ MATLAB MEX wrappers for [CoolProp v8.0.0](https://github.com/CoolProp/CoolProp),
 
 ```
 CoolPropMEX/
-├── CoolProp/          # CoolProp v8.0.0 (git submodule)
+├── CoolProp/          # CoolProp v8.1.0 (git submodule)
 ├── src/               # MEX C++ source files
 │   ├── PropsSI.cpp
 │   ├── HAPropsSI.cpp
@@ -107,7 +107,7 @@ addpath('/path/to/CoolPropMEX/Release')
 
 ## Releases (CI/CD)
 
-Releases are built automatically via GitHub Actions on every version tag push. **The tag must match the CoolProp submodule version** — e.g. if the `CoolProp/` submodule is pinned to v8.0.0, the tag must be `v8.0.0`. The workflow enforces this and fails immediately if they do not match.
+Releases are built automatically via GitHub Actions on every version tag push. **The tag must match the CoolProp submodule version** — e.g. if the `CoolProp/` submodule is pinned to v8.1.0, the tag must be `v8.1.0`. The workflow enforces this and fails immediately if they do not match.
 
 ### To release for a new CoolProp version
 
